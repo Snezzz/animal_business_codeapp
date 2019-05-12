@@ -6,6 +6,8 @@ This example was created for the Basics of Grid and Cloud Computing course.
 
 You can find more detailed information in the [presentation](https://github.com/Snezzz/animal_business_codeapp/blob/master/Presentation/Blockchain.pptx).
 
+Helpful link: [Running the example CorDapp](https://docs.corda.net/tutorial-cordapp.html)
+
 **Start**  
 1.`git clone`  
 2.import as a gradle project  
