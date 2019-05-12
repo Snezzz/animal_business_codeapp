@@ -1,0 +1,173 @@
+buildscript {
+    ext.corda_version = '0.10.1'
+    ext.corda_gradle_plugins_version = '0.10.3'
+    ext.kotlin_version = '1.1.1'
+    ext.junit_version = '4.12'
+    ext.quasar_version = '0.7.6'
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "net.corda.plugins:publish-utils:$corda_gradle_plugins_version"
+        classpath "net.corda.plugins:cordformation:$corda_gradle_plugins_version"
+        classpath "net.corda.plugins:quasar-utils:$corda_gradle_plugins_version"
+    }
+}
+
+apply plugin: 'kotlin'
+apply plugin: 'idea'
+apply plugin: 'net.corda.plugins.publish-utils'
+apply plugin: 'net.corda.plugins.cordformation'
+apply plugin: 'net.corda.plugins.quasar-utils'
+apply plugin: 'maven-publish'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    jcenter()
+    maven { url 'https://dl.bintray.com/kotlin/exposed' }
+    maven { url 'https://jitpack.io' }
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDir "config/dev"
+        }
+    }
+    test {
+        resources {
+            srcDir "config/test"
+        }
+    }
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
+    testCompile "junit:junit:$junit_version"
+
+    // Corda integration dependencies
+    compile "net.corda:core:$corda_version"
+    compile "net.corda:finance:$corda_version"
+    compile "net.corda:jackson:$corda_version"
+    compile "net.corda:node:$corda_version"
+    compile "net.corda:rpc:$corda_version"
+    compile "net.corda:webserver:$corda_version"
+    runtime "net.corda:corda:$corda_version"
+    runtime "net.corda:corda-webserver:$corda_version"
+
+    testCompile "net.corda:test-utils:$corda_version"
+
+    // GraphStream: For visualisation (required by TemplateClientRPC app)
+    compile "org.graphstream:gs-core:1.3"
+    compile("org.graphstream:gs-ui:1.3") {
+        exclude group: "bouncycastle"
+    }
+}
+
+task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['build']) {
+    directory "./build/nodes"
+    networkMap "Notary"
+    node {
+        name "Notary"
+        advertisedServices = ["corda.notary.validating"]
+        p2pPort 10012
+        rpcPort 10013
+        webPort 10014
+        cordapps = []
+    }
+    node {
+        name "BuyerVasya"
+        advertisedServices = []
+        p2pPort 10015
+        rpcPort 10016
+        webPort 10017
+        cordapps = []
+        rpcUsers = [[user: "user1", "password": "test", "permissions": []]]
+    }
+    node {
+        name "BuyerPetya"
+        advertisedServices = []
+        p2pPort 10018
+        rpcPort 10019
+        webPort 10020
+        cordapps = []
+        rpcUsers = [[user: "user1", "password": "test", "permissions": []]]
+    }
+    
+    node {
+        name "RussianAnimalStore"
+        advertisedServices = []
+        p2pPort 10021
+        rpcPort 10022
+        webPort 10023
+        cordapps = []
+        rpcUsers = [[user: "user1", "password": "test", "permissions": []]]
+        
+    }
+    node {
+        name "EnglishAnimalStore"
+        advertisedServices = []
+        p2pPort 10024
+        rpcPort 10025
+        webPort 10026
+        cordapps = []
+        rpcUsers = [[user: "user1", "password": "test", "permissions": []]]
+    }
+}
+
+idea {
+    module {
+        downloadJavadoc = true // defaults to false
+        downloadSources = true
+    }
+}
+
+publishing {
+    publications {
+        jarAndSources(MavenPublication) {
+            from components.java
+            artifactId 'cordapp-name-goes-here'
+
+            artifact sourceJar
+            artifact javadocJar
+        }
+    }
+}
+
+task runChatRPCNotary(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'net.corda.work.ClientKt'
+    args 'localhost:10013'
+}
+
+
+task runChatRPCNodeA(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'net.corda.work.ClientKt'
+    args 'localhost:10016'
+}
+
+task runChatRPCNodeB(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'net.corda.work.ClientKt'
+    args 'localhost:10019'
+}
+
+task runChatRPCNodeC(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'net.corda.work.ClientKt'
+    args 'localhost:10022'
+}
+
+task runChatRPCNodeD(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'net.corda.work.ClientKt'
+    args 'localhost:10025'
+}
