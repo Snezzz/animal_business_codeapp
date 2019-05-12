@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CorDapp</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.0-rc.1/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.2.0/ui-bootstrap-tpls.min.js"></script>
+    <script src="js/index.js"></script>
+</head>
+
+<body ng-app="workModule" ng-controller="workCtrl as workApp">
+
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">workApp - {{workApp.thisNode}}</a>
+        </div>
+    </div>
+</nav>
+
+
+<div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-3">
+        <ul class="nav nav-pills nav-stacked">
+            <li ng-repeat="peer in workApp.peers">
+                <a data-toggle="pill" ng-href="#{{peer}}">{{peer}}</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="col-md-7">
+        <div class="tab-content">
+            <div ng-repeat="peer in workApp.peers" class="tab-pane fade" id="{{peer}}">
+                <h3>Send message to {{peer}}:</h3>
+                <form>
+                    <div class="form-group">
+                        <textarea class="form-control" ng-model="workApp.form.message" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" ng-click="workApp.send(peer)">Send!</button>
+                </form>
+                <h3>Messages with {{peer}}:</h3>
+                <ul class="list-group">
+                    <li class="list-group-item" ng-repeat="message in workApp.messages[peer]"
+                        ng-class="message[0] == 'Me: ' ? ' list-group-item-success' : 'list-group-item-info'">
+                        {{message[0]}} {{message[1]}}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-1"></div>
+</div>
+
+</body>
+
+</html>
